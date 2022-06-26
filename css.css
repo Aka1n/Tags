@@ -1,0 +1,165 @@
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+:focus,
+:active {
+    outline: none;
+}
+
+a:focus,
+a:active {
+    outline: none;
+}
+
+nav,
+footer,
+header,
+aside {
+    display: block;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    line-height: 1;
+    font-size: 14px;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+input,
+button,
+textarea {
+    font-family: inherit;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+ul li {
+    list-style: none;
+}
+
+img {
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: 400;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    background-color: lightgrey;
+    padding: 10px;
+    border-radius: 5px;
+    width: 400px;
+
+}
+.tags {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid darkgray;
+    flex-wrap: wrap;
+    padding: -5px -5px;
+}
+.tag {
+    display: flex;
+    padding: 5px;
+    background-color: darkseagreen;
+    border-radius: 5px;
+    margin: 5px 5px;
+}
+.text {
+    margin-right: 5px;
+}
+.close {
+    transform: rotate(45deg);
+    cursor: pointer;
+}
+.disabled {
+    pointer-events:none;
+}
+.row {
+    display: flex;
+    margin-top: 10px;
+}
+.clear {
+    margin-top: 5px;
+    font-size: 14px;
+    color: grey;
+    cursor: pointer;
+}
+.readOnly {
+    margin-top: 5px;
+    display: flex;
+    font-size: 14px;
+    color: grey;
+}
+#checkbox {
+    width: auto;
+    margin-right: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+button {
+    width: 50px;
+    margin-left: 10px;
+    border-radius: 5px;
+    background-color: deepskyblue;
+    font-size: 18px;
+}
