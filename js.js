@@ -1,97 +1,135 @@
 class Tags {
 
     #_tags = localStorage
-    #_readOnly = false
-    tagsHTML = document.getElementsByClassName("tags")
     closeHTML = document.getElementsByClassName("close")
     button = document.getElementById("button")
     input = document.getElementById('input')
     clear = document.getElementById('clear')
+    tagsHTML = document.getElementsByClassName("tags")
     checkbox = document.getElementById('checkbox')
 
-    createTag(id, value) {
-        let tag = document.createElement("div")
-        tag.id = id
-        tag.className = "tag"
-        tag.innerHTML = `<div class="text">${value}</div><div class="close">+</div>`
-        return tag
+    getTags() {
+        return this.#_tags
     }
 
-    getTags() {
-        const tags = JSON.parse(this.#_tags.getItem('tags'))
-        return tags
+    getTagsArray() {
+        return JSON.parse(this.#_tags.getItem('tags'))
     }
 
     setTag(text) {
-        let obj = {
+        const obj = {
             id: 0,
             value: text
         }
-        if (this.getTags() === null || this.getTags().length === 0) {
+        if (this.getTagsArray() === null || this.getTagsArray().length === 0) {
             this.#_tags.setItem('tags', JSON.stringify([obj]))
         } else {
-            obj.id = this.getTags()[this.getTags().length - 1].id + 1
-            this.#_tags.setItem('tags', JSON.stringify([...this.getTags(), obj]))
+            obj.id = this.getTagsArray()[this.getTagsArray().length - 1].id + 1
+            this.#_tags.setItem('tags', JSON.stringify([...this.getTagsArray(), obj]))
         }
-        this.addTags()
-    }
-
-    deleteTag(id) {
-        let array = this.getTags().filter((el) => el.id !== +id)
-        this.#_tags.setItem('tags', JSON.stringify(array))
     }
 
     clearTags() {
         this.#_tags.clear()
-        this.addTags()
-    }
-
-    getCheckBox() {
-        return this.#_readOnly
-    }
-
-    setCheckBox() {
-        this.#_readOnly = !this.#_readOnly
-    }
-
-    addTags() {
-
-        this.tagsHTML[0].innerHTML = ''
-
-        if (this.getTags() === null || this.getTags().length === 0) return
-
-        this.getTags().forEach((el) => {
-            const tag = this.createTag(el.id, el.value)
-            this.tagsHTML[0].append(tag)
-        })
-
-        Array.from(this.closeHTML).forEach((e) => {
-            e.addEventListener('click', () => {
-                this.deleteTag(e.parentElement.id)
-                e.parentElement.remove()
-            })
-        })
     }
 
 }
 
+class Render extends Tags {
+
+    getTagsArray() {
+        return super.getTagsArray();
+    }
+
+    render() {
+
+        const deleteTag = new Delete()
+        const createTag = new Create()
+
+        this.tagsHTML[0].innerHTML = ''
+
+        if (this.getTagsArray() === null || this.getTagsArray().length === 0) return
+
+        this.getTagsArray().forEach((el) => {
+            createTag.setTag(el.id, el.value)
+            this.tagsHTML[0].append(createTag.getTag())
+        })
+
+        Array.from(this.closeHTML).forEach((e) => {
+            e.addEventListener('click', () => {
+                deleteTag.setDelete(e.parentElement.id)
+                e.parentElement.remove()
+            })
+        })
+    }
+}
+
+class ReadOnly {
+
+    #_readOnly = false
+
+    getReadOnly() {
+        return this.#_readOnly
+    }
+    setReadOnly(){
+        this.#_readOnly = !this.#_readOnly
+    }
+}
+
+class Create {
+
+    #_tag
+
+    getTag() {
+        return this.#_tag
+    }
+    setTag(id, value) {
+        let tag = document.createElement("div")
+        tag.id = id
+        tag.className = "tag"
+        tag.innerHTML = `<div class="text">${value}</div><div class="close">+</div>`
+        this.#_tag = tag
+    }
+}
+
+class Delete extends Tags {
+
+    getTags() {
+        return super.getTags();
+    }
+    getTagsArray() {
+        return super.getTagsArray();
+    }
+
+    setDelete(id) {
+        let array = this.getTagsArray().filter((el) => el.id !== +id)
+        this.getTags().setItem('tags', JSON.stringify(array))
+
+    }
+}
+
 
 const tags = new Tags()
-
-tags.addTags()
+const render = new Render()
+const readOnly = new ReadOnly()
+render.render()
 
 tags.button.addEventListener('click', () => {
     if (tags.input.value.length !== 0) {
         tags.setTag(tags.input.value)
+        render.render()
         tags.input.value = ""
     }
 })
 
-tags.clear.addEventListener('click', () => tags.clearTags())
+tags.clear.addEventListener('click', () => {
+    tags.clearTags()
+    render.render()
+})
 
-tags.checkbox.addEventListener('click', (e) => {
-    tags.setCheckBox()
-    if (tags.getCheckBox()) {
+tags.checkbox.addEventListener('click', () => {
+    readOnly.setReadOnly()
+    if (readOnly.getReadOnly()) {
         tags.button.disabled = true
         tags.input.disabled = true
         tags.clear.className = "clear disabled"
