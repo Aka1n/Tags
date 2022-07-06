@@ -1,15 +1,40 @@
-class Tags {
+class Store {
 
-    #_tags = localStorage
-    #_readOnly = false
+    getStore() {
+        return JSON.parse(localStorage.getItem('tags'))
+    }
+
+    setStore(value) {
+
+        let obj = {
+            id: 0,
+            value
+        }
+        if (this.getStore() === null || this.getStore().length === 0) {
+            localStorage.setItem('tags', JSON.stringify([obj]))
+        } else {
+            obj.id = this.getStore()[this.getStore().length - 1].id + 1
+            localStorage.setItem('tags', JSON.stringify([...this.getStore(), obj]))
+        }
+    }
+
+    clearStore() {
+        localStorage.clear()
+    }
+
+    removeStore(id) {
+        let array = this.getStore().filter((el) => el.id !== +id)
+        localStorage.setItem('tags', JSON.stringify(array))
+    }
+
+}
+
+class Render {
+
     tagsHTML = document.getElementsByClassName("tags")
     closeHTML = document.getElementsByClassName("close")
-    button = document.getElementById("button")
-    input = document.getElementById('input')
-    clear = document.getElementById('clear')
-    checkbox = document.getElementById('checkbox')
 
-    createTag(id, value) {
+    create(id, value) {
         let tag = document.createElement("div")
         tag.id = id
         tag.className = "tag"
@@ -17,93 +42,76 @@ class Tags {
         return tag
     }
 
-    getTags() {
-        const tags = JSON.parse(this.#_tags.getItem('tags'))
-        return tags
-    }
-
-    setTag(text) {
-        let obj = {
-            id: 0,
-            value: text
-        }
-        if (this.getTags() === null || this.getTags().length === 0) {
-            this.#_tags.setItem('tags', JSON.stringify([obj]))
-        } else {
-            obj.id = this.getTags()[this.getTags().length - 1].id + 1
-            this.#_tags.setItem('tags', JSON.stringify([...this.getTags(), obj]))
-        }
-        this.addTags()
-    }
-
-    deleteTag(id) {
-        let array = this.getTags().filter((el) => el.id !== +id)
-        this.#_tags.setItem('tags', JSON.stringify(array))
-    }
-
-    clearTags() {
-        this.#_tags.clear()
-        this.addTags()
-    }
-
-    getCheckBox() {
-        return this.#_readOnly
-    }
-
-    setCheckBox() {
-        this.#_readOnly = !this.#_readOnly
-    }
-
-    addTags() {
+    render(store) {
 
         this.tagsHTML[0].innerHTML = ''
 
-        if (this.getTags() === null || this.getTags().length === 0) return
+        if (store.getStore() === null || store.getStore().length === 0) return
 
-        this.getTags().forEach((el) => {
-            const tag = this.createTag(el.id, el.value)
+        store.getStore().forEach((el) => {
+            const tag = this.create(el.id, el.value)
             this.tagsHTML[0].append(tag)
         })
 
         Array.from(this.closeHTML).forEach((e) => {
             e.addEventListener('click', () => {
-                this.deleteTag(e.parentElement.id)
+                store.removeStore(e.parentElement.id)
                 e.parentElement.remove()
             })
         })
     }
-
 }
 
+class HZ {
 
-const tags = new Tags()
+    closeHTML = document.getElementsByClassName("close")
+    button = document.getElementById("button")
+    input = document.getElementById('input')
+    clear = document.getElementById('clear')
+    checkbox = document.getElementById('checkbox')
 
-tags.addTags()
+    readOnly = false
 
-tags.button.addEventListener('click', () => {
-    if (tags.input.value.length !== 0) {
-        tags.setTag(tags.input.value)
-        tags.input.value = ""
+    setCheckBox() {
+        this.readOnly = !this.readOnly
     }
-})
+}
 
-tags.clear.addEventListener('click', () => tags.clearTags())
+const store = new Store()
+const render = new Render()
+const hz = new HZ()
 
-tags.checkbox.addEventListener('click', (e) => {
-    tags.setCheckBox()
-    if (tags.getCheckBox()) {
-        tags.button.disabled = true
-        tags.input.disabled = true
-        tags.clear.className = "clear disabled"
-        Array.from(tags.closeHTML).forEach((el) => {
+
+render.render(store)
+
+hz.checkbox.addEventListener('click', () => {
+    hz.setCheckBox()
+    if (hz.readOnly) {
+        hz.button.disabled = true
+        hz.input.disabled = true
+        hz.clear.className = "clear disabled"
+        Array.from(hz.closeHTML).forEach((el) => {
             el.className = "close disabled"
         })
     } else {
-        tags.button.disabled = false
-        tags.input.disabled = false
-        tags.clear.className = "clear"
-        Array.from(tags.closeHTML).forEach((el) => {
+        hz.button.disabled = false
+        hz.input.disabled = false
+        hz.clear.className = "clear"
+        Array.from(hz.closeHTML).forEach((el) => {
             el.className = "close"
         })
+    }
+})
+
+hz.clear.addEventListener('click', () => {
+    store.clearStore()
+    render.render(store)
+})
+
+hz.button.addEventListener('click', () => {
+    if (hz.input.value.length !== 0) {
+        store.setStore(hz.input.value)
+        render.render(store)
+        hz.input.value = ""
     }
 })
